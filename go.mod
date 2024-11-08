@@ -3,6 +3,7 @@ module github.com/dbackowski/gorog
 go 1.22.2
 
 require (
+	github.com/bytearena/ecs v1.0.0
 	github.com/hajimehoshi/ebiten v1.12.12
 	github.com/hajimehoshi/ebiten/v2 v2.8.3
 )

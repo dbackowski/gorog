@@ -3,13 +3,15 @@ package main
 import (
 	"log"
 
+	"github.com/bytearena/ecs"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Game struct {
-	Map GameMap
+	Map       GameMap
+	World     *ecs.Manager
+	WorldTags map[string]ecs.Tag
 }
-
 type MapTile struct {
 	PixelX  int
 	PixelY  int
@@ -19,7 +21,10 @@ type MapTile struct {
 
 func NewGame() *Game {
 	g := &Game{}
+	world, tags := InitializeWorld()
 	g.Map = NewGameMap()
+	g.WorldTags = tags
+	g.World = world
 	return g
 }
 
@@ -33,17 +38,8 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	gd := NewGameData()
 	level := g.Map.Dungeons[0].Levels[0]
-
-	for x := 0; x < gd.ScreenWidth; x++ {
-		for y := 0; y < gd.ScreenHeight; y++ {
-			tile := level.Tiles[level.GetIndexFromXY(x, y)]
-			op := &ebiten.DrawImageOptions{}
-			op.GeoM.Translate(float64(tile.PixelX), float64(tile.PixelY))
-			screen.DrawImage(tile.Image, op)
-		}
-	}
+	level.DrawLevel(screen)
 }
 
 func main() {
