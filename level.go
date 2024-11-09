@@ -39,7 +39,8 @@ func (level *Level) GetIndexFromXY(x int, y int) int {
 
 func (level *Level) CreateTiles() []MapTile {
 	gd := NewGameData()
-	tiles := make([]MapTile, 0)
+	tiles := make([]MapTile, gd.ScreenHeight*gd.ScreenWidth)
+	index := 0
 	img, _, err := ebitenutil.NewImageFromFile("assets/EverRogueTileset 1.0 Horizontal.png")
 
 	if err != nil {
@@ -48,6 +49,7 @@ func (level *Level) CreateTiles() []MapTile {
 
 	for x := 0; x < gd.ScreenWidth; x++ {
 		for y := 0; y < gd.ScreenHeight; y++ {
+			index = level.GetIndexFromXY(x, y)
 			if x == 0 || x == gd.ScreenWidth-1 || y == 0 || y == gd.ScreenHeight-1 {
 				wall := img.SubImage(image.Rect(272, 0, 256, 272)).(*ebiten.Image) // wall image
 
@@ -57,7 +59,7 @@ func (level *Level) CreateTiles() []MapTile {
 					Blocked: true,
 					Image:   wall,
 				}
-				tiles = append(tiles, tile)
+				tiles[index] = tile
 			} else {
 				floor := img.SubImage(image.Rect(0, 0, 16, 16)).(*ebiten.Image) // floor image
 
@@ -67,10 +69,9 @@ func (level *Level) CreateTiles() []MapTile {
 					Blocked: false,
 					Image:   floor,
 				}
-				tiles = append(tiles, tile)
+				tiles[index] = tile
 			}
 		}
 	}
-
 	return tiles
 }
