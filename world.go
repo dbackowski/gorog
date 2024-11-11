@@ -30,6 +30,7 @@ func InitializeWorld() (*ecs.Manager, map[string]ecs.Tag) {
 	movable := manager.NewComponent()
 
 	manager.NewEntity().
+		AddComponent(player, Player{}).
 		AddComponent(renderable, &Renderable{
 			Image: playerImg,
 		}).

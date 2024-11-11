@@ -34,6 +34,7 @@ func (g *Game) Layout(w, h int) (int, int) {
 }
 
 func (g *Game) Update() error {
+	TryMovePlayer(g)
 	return nil
 }
 
