@@ -12,7 +12,7 @@ import (
 var position *ecs.Component
 var renderable *ecs.Component
 
-func InitializeWorld() (*ecs.Manager, map[string]ecs.Tag) {
+func InitializeWorld(startingLevel Level) (*ecs.Manager, map[string]ecs.Tag) {
 	tags := make(map[string]ecs.Tag)
 	manager := ecs.NewManager()
 
@@ -23,7 +23,8 @@ func InitializeWorld() (*ecs.Manager, map[string]ecs.Tag) {
 	}
 
 	playerImg := img.SubImage(image.Rect(2800, 0, 2784, 2800)).(*ebiten.Image) // player image
-
+	startingRoom := startingLevel.Rooms[0]
+	x, y := startingRoom.Center()
 	player := manager.NewComponent()
 	position = manager.NewComponent()
 	renderable = manager.NewComponent()
@@ -36,8 +37,8 @@ func InitializeWorld() (*ecs.Manager, map[string]ecs.Tag) {
 		}).
 		AddComponent(movable, Movable{}).
 		AddComponent(position, &Position{
-			X: 40,
-			Y: 25,
+			X: x,
+			Y: y,
 		})
 
 	players := ecs.BuildTag(player, position)
