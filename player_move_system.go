@@ -28,7 +28,7 @@ func TryMovePlayer(g *Game) {
 		index := level.GetIndexFromXY(pos.X+x, pos.Y+y)
 
 		tile := level.Tiles[index]
-		if tile.Blocked != true {
+		if !tile.Blocked {
 			pos.X += x
 			pos.Y += y
 		}
