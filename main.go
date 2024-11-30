@@ -15,10 +15,11 @@ type Game struct {
 	TurnCounter int
 }
 type MapTile struct {
-	PixelX  int
-	PixelY  int
-	Blocked bool
-	Image   *ebiten.Image
+	PixelX     int
+	PixelY     int
+	Blocked    bool
+	Image      *ebiten.Image
+	IsRevealed bool
 }
 
 func NewGame() *Game {

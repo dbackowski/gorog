@@ -161,12 +161,21 @@ func NewLevel() Level {
 
 func (level *Level) DrawLevel(screen *ebiten.Image) {
 	gd := NewGameData()
+
 	for x := 0; x < gd.ScreenWidth; x++ {
 		for y := 0; y < gd.ScreenHeight; y++ {
-			if level.PlayerVisible.IsVisible(x, y) {
-				tile := level.Tiles[level.GetIndexFromXY(x, y)]
+			idx := level.GetIndexFromXY(x, y)
+			tile := level.Tiles[idx]
+			isVis := level.PlayerVisible.IsVisible(x, y)
+			if isVis {
 				op := &ebiten.DrawImageOptions{}
 				op.GeoM.Translate(float64(tile.PixelX), float64(tile.PixelY))
+				screen.DrawImage(tile.Image, op)
+				level.Tiles[idx].IsRevealed = true
+			} else if tile.IsRevealed {
+				op := &ebiten.DrawImageOptions{}
+				op.GeoM.Translate(float64(tile.PixelX), float64(tile.PixelY))
+				op.ColorM.Translate(-0.3, -0.3, -0.3, 0.35)
 				screen.DrawImage(tile.Image, op)
 			}
 		}
@@ -193,10 +202,11 @@ func (level *Level) createTiles() []MapTile {
 			index = level.GetIndexFromXY(x, y)
 			wall := img.SubImage(image.Rect(272, 0, 256, 272)).(*ebiten.Image) // wall image
 			tile := MapTile{
-				PixelX:  x * gd.TileWidth,
-				PixelY:  y * gd.TileHeight,
-				Blocked: true,
-				Image:   wall,
+				PixelX:     x * gd.TileWidth,
+				PixelY:     y * gd.TileHeight,
+				Blocked:    true,
+				Image:      wall,
+				IsRevealed: false,
 			}
 			tiles[index] = tile
 		}
