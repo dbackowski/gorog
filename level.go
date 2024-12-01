@@ -10,6 +10,13 @@ import (
 	"github.com/norendren/go-fov/fov"
 )
 
+type TileType int
+
+const (
+	WALL TileType = iota
+	FLOOR
+)
+
 type Level struct {
 	Tiles         []MapTile
 	Rooms         []Rect
@@ -42,7 +49,7 @@ func (level Level) InBounds(x, y int) bool {
 
 func (level Level) IsOpaque(x, y int) bool {
 	idx := level.GetIndexFromXY(x, y)
-	return level.Tiles[idx].Blocked
+	return level.Tiles[idx].TileType == WALL
 }
 
 func (level *Level) createHorizontalTunnel(x1 int, x2 int, y int) {
@@ -57,6 +64,7 @@ func (level *Level) createHorizontalTunnel(x1 int, x2 int, y int) {
 		index := level.GetIndexFromXY(x, y)
 		if index > 0 && index < gd.ScreenWidth*gd.ScreenHeight {
 			level.Tiles[index].Blocked = false
+			level.Tiles[index].TileType = FLOOR
 			floor := img.SubImage(image.Rect(0, 0, 16, 16)).(*ebiten.Image) // floor image
 			level.Tiles[index].Image = floor
 		}
@@ -76,6 +84,7 @@ func (level *Level) createVerticalTunnel(y1 int, y2 int, x int) {
 
 		if index > 0 && index < gd.ScreenWidth*gd.ScreenHeight {
 			level.Tiles[index].Blocked = false
+			level.Tiles[index].TileType = FLOOR
 			floor := img.SubImage(image.Rect(0, 0, 16, 16)).(*ebiten.Image) // floor image
 			level.Tiles[index].Image = floor
 		}
@@ -93,6 +102,7 @@ func (level *Level) createRoom(room Rect) {
 		for x := room.X1 + 1; x < room.X2; x++ {
 			index := level.GetIndexFromXY(x, y)
 			level.Tiles[index].Blocked = false
+			level.Tiles[index].TileType = FLOOR
 			floor := img.SubImage(image.Rect(0, 0, 16, 16)).(*ebiten.Image) // floor image
 
 			if err != nil {
@@ -207,6 +217,7 @@ func (level *Level) createTiles() []MapTile {
 				Blocked:    true,
 				Image:      wall,
 				IsRevealed: false,
+				TileType:   WALL,
 			}
 			tiles[index] = tile
 		}

@@ -20,6 +20,7 @@ type MapTile struct {
 	Blocked    bool
 	Image      *ebiten.Image
 	IsRevealed bool
+	TileType   TileType
 }
 
 func NewGame() *Game {

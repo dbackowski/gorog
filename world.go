@@ -22,13 +22,31 @@ func InitializeWorld(startingLevel Level) (*ecs.Manager, map[string]ecs.Tag) {
 		log.Fatal(err)
 	}
 
-	playerImg := img.SubImage(image.Rect(2800, 0, 2784, 2800)).(*ebiten.Image) // player image
+	playerImg := img.SubImage(image.Rect(2800, 0, 2784, 2800)).(*ebiten.Image)  // player image
+	monsterImg := img.SubImage(image.Rect(2784, 0, 2768, 2784)).(*ebiten.Image) // monster image
+
 	startingRoom := startingLevel.Rooms[0]
 	x, y := startingRoom.Center()
 	player := manager.NewComponent()
 	position = manager.NewComponent()
 	renderable = manager.NewComponent()
 	movable := manager.NewComponent()
+	monster := manager.NewComponent()
+
+	for _, room := range startingLevel.Rooms {
+		if room.X1 != startingRoom.X1 {
+			mX, mY := room.Center()
+			manager.NewEntity().
+				AddComponent(monster, Monster{}).
+				AddComponent(renderable, &Renderable{
+					Image: monsterImg,
+				}).
+				AddComponent(position, &Position{
+					X: mX,
+					Y: mY,
+				})
+		}
+	}
 
 	manager.NewEntity().
 		AddComponent(player, Player{}).
