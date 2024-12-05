@@ -18,7 +18,7 @@ const (
 )
 
 type Level struct {
-	Tiles         []MapTile
+	Tiles         []*MapTile
 	Rooms         []Rect
 	PlayerVisible *fov.View
 }
@@ -197,9 +197,9 @@ func (level *Level) GetIndexFromXY(x int, y int) int {
 	return (y * gd.ScreenWidth) + x
 }
 
-func (level *Level) createTiles() []MapTile {
+func (level *Level) createTiles() []*MapTile {
 	gd := NewGameData()
-	tiles := make([]MapTile, gd.ScreenHeight*gd.ScreenWidth)
+	tiles := make([]*MapTile, gd.ScreenHeight*gd.ScreenWidth)
 	index := 0
 	img, _, err := ebitenutil.NewImageFromFile("assets/EverRogueTileset 1.0 Horizontal.png")
 
@@ -219,7 +219,7 @@ func (level *Level) createTiles() []MapTile {
 				IsRevealed: false,
 				TileType:   WALL,
 			}
-			tiles[index] = tile
+			tiles[index] = &tile
 		}
 	}
 	return tiles
