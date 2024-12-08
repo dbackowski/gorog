@@ -6,15 +6,7 @@ import (
 )
 
 func GetRandomBetween(low int, high int) int {
-	var randy int = -1
-	for {
-		randy = GetDiceRoll(high)
-		if randy >= low {
-			break
-		}
-	}
-
-	return randy
+	return GetDiceRoll(high-low) + high
 }
 
 func GetRandomInt(num int) int {

@@ -10,6 +10,9 @@ import (
 	"github.com/norendren/go-fov/fov"
 )
 
+var floor *ebiten.Image
+var wall *ebiten.Image
+
 type TileType int
 
 const (
@@ -21,6 +24,21 @@ type Level struct {
 	Tiles         []*MapTile
 	Rooms         []Rect
 	PlayerVisible *fov.View
+}
+
+func loadTileImages() {
+	if floor != nil && wall != nil {
+		return
+	}
+
+	img, _, err := ebitenutil.NewImageFromFile("assets/EverRogueTileset 1.0 Horizontal.png")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	floor = img.SubImage(image.Rect(0, 0, 16, 16)).(*ebiten.Image)    // floor image
+	wall = img.SubImage(image.Rect(272, 0, 256, 272)).(*ebiten.Image) // wall image
 }
 
 // Max returns the larger of x or y.
@@ -54,18 +72,12 @@ func (level Level) IsOpaque(x, y int) bool {
 
 func (level *Level) createHorizontalTunnel(x1 int, x2 int, y int) {
 	gd := NewGameData()
-	img, _, err := ebitenutil.NewImageFromFile("assets/EverRogueTileset 1.0 Horizontal.png")
-
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	for x := min(x1, x2); x < max(x1, x2)+1; x++ {
 		index := level.GetIndexFromXY(x, y)
 		if index > 0 && index < gd.ScreenWidth*gd.ScreenHeight {
 			level.Tiles[index].Blocked = false
 			level.Tiles[index].TileType = FLOOR
-			floor := img.SubImage(image.Rect(0, 0, 16, 16)).(*ebiten.Image) // floor image
 			level.Tiles[index].Image = floor
 		}
 	}
@@ -73,11 +85,6 @@ func (level *Level) createHorizontalTunnel(x1 int, x2 int, y int) {
 
 func (level *Level) createVerticalTunnel(y1 int, y2 int, x int) {
 	gd := NewGameData()
-	img, _, err := ebitenutil.NewImageFromFile("assets/EverRogueTileset 1.0 Horizontal.png")
-
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	for y := min(y1, y2); y < max(y1, y2)+1; y++ {
 		index := level.GetIndexFromXY(x, y)
@@ -85,29 +92,17 @@ func (level *Level) createVerticalTunnel(y1 int, y2 int, x int) {
 		if index > 0 && index < gd.ScreenWidth*gd.ScreenHeight {
 			level.Tiles[index].Blocked = false
 			level.Tiles[index].TileType = FLOOR
-			floor := img.SubImage(image.Rect(0, 0, 16, 16)).(*ebiten.Image) // floor image
 			level.Tiles[index].Image = floor
 		}
 	}
 }
 
 func (level *Level) createRoom(room Rect) {
-	img, _, err := ebitenutil.NewImageFromFile("assets/EverRogueTileset 1.0 Horizontal.png")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	for y := room.Y1 + 1; y < room.Y2; y++ {
 		for x := room.X1 + 1; x < room.X2; x++ {
 			index := level.GetIndexFromXY(x, y)
 			level.Tiles[index].Blocked = false
 			level.Tiles[index].TileType = FLOOR
-			floor := img.SubImage(image.Rect(0, 0, 16, 16)).(*ebiten.Image) // floor image
-
-			if err != nil {
-				log.Fatal(err)
-			}
 			level.Tiles[index].Image = floor
 		}
 	}
@@ -162,6 +157,7 @@ func (level *Level) GenerateLevelTiles() {
 
 func NewLevel() Level {
 	l := Level{}
+	loadTileImages()
 	rooms := make([]Rect, 0)
 	l.Rooms = rooms
 	l.GenerateLevelTiles()
@@ -201,16 +197,10 @@ func (level *Level) createTiles() []*MapTile {
 	gd := NewGameData()
 	tiles := make([]*MapTile, gd.ScreenHeight*gd.ScreenWidth)
 	index := 0
-	img, _, err := ebitenutil.NewImageFromFile("assets/EverRogueTileset 1.0 Horizontal.png")
-
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	for x := 0; x < gd.ScreenWidth; x++ {
 		for y := 0; y < gd.ScreenHeight; y++ {
 			index = level.GetIndexFromXY(x, y)
-			wall := img.SubImage(image.Rect(272, 0, 256, 272)).(*ebiten.Image) // wall image
 			tile := MapTile{
 				PixelX:     x * gd.TileWidth,
 				PixelY:     y * gd.TileHeight,
