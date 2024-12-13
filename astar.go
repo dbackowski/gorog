@@ -27,7 +27,7 @@ func newNode(parent *node, position *Position) *node {
 }
 
 func (n *node) isEqual(other *node) bool {
-	return (n.Position.X == other.Position.X && n.Position.Y == other.Position.Y)
+	return n.Position.IsEqual(other.Position)
 }
 
 func isInSlice(s []*node, target *node) bool {
