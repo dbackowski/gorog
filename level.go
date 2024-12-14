@@ -12,6 +12,7 @@ import (
 
 var floor *ebiten.Image
 var wall *ebiten.Image
+var levelHeight int = 0
 
 type TileType int
 
@@ -117,6 +118,7 @@ func (level *Level) GenerateLevelTiles() {
 	gd := NewGameData()
 	tiles := level.createTiles()
 	level.Tiles = tiles
+	levelHeight = gd.ScreenHeight - gd.UIHeight
 
 	for idx := 0; idx < MAX_ROOMS; idx++ {
 		w := GetRandomBetween(MIN_SIZE, MAX_SIZE)
