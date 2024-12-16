@@ -1,11 +1,9 @@
 package main
 
 import (
-	"image"
 	"log"
 
 	"github.com/bytearena/ecs"
-	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
@@ -22,14 +20,16 @@ func InitializeWorld(startingLevel Level) (*ecs.Manager, map[string]ecs.Tag) {
 	tags := make(map[string]ecs.Tag)
 	manager := ecs.NewManager()
 
-	img, _, err := ebitenutil.NewImageFromFile("assets/EverRogueTileset 1.0 Horizontal.png")
-
+	playerImg, _, err := ebitenutil.NewImageFromFile("assets/player.png")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	playerImg := img.SubImage(image.Rect(2800, 0, 2784, 2800)).(*ebiten.Image)  // player image
-	monsterImg := img.SubImage(image.Rect(2784, 0, 2768, 2784)).(*ebiten.Image) // monster image
+	skellyImg, _, err := ebitenutil.NewImageFromFile("assets/skelly.png")
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	startingRoom := startingLevel.Rooms[0]
 	x, y := startingRoom.Center()
@@ -83,7 +83,7 @@ func InitializeWorld(startingLevel Level) (*ecs.Manager, map[string]ecs.Tag) {
 			manager.NewEntity().
 				AddComponent(monster, &Monster{}).
 				AddComponent(renderable, &Renderable{
-					Image: monsterImg,
+					Image: skellyImg,
 				}).
 				AddComponent(position, &Position{
 					X: mX,

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"image"
 	_ "image/png"
 	"log"
 
@@ -32,14 +31,17 @@ func loadTileImages() {
 		return
 	}
 
-	img, _, err := ebitenutil.NewImageFromFile("assets/EverRogueTileset 1.0 Horizontal.png")
+	var err error
 
+	floor, _, err = ebitenutil.NewImageFromFile("assets/floor.png")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	floor = img.SubImage(image.Rect(0, 0, 16, 16)).(*ebiten.Image)    // floor image
-	wall = img.SubImage(image.Rect(272, 0, 256, 272)).(*ebiten.Image) // wall image
+	wall, _, err = ebitenutil.NewImageFromFile("assets/wall.png")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // Max returns the larger of x or y.
