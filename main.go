@@ -51,13 +51,14 @@ func (g *Game) Update() error {
 	return nil
 }
 
-//Draw is called each draw cycle and is where we will blit.
+// Draw is called each draw cycle and is where we will blit.
 func (g *Game) Draw(screen *ebiten.Image) {
 	//Draw the Map
 	level := g.Map.CurrentLevel
 	level.DrawLevel(screen)
 	ProcessRenderables(g, level, screen)
 	ProcessUserLog(g, screen)
+	ProcessHUD(g, screen)
 }
 
 func main() {
