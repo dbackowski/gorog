@@ -24,6 +24,7 @@ func ProcessUserLog(g *Game, screen *ebiten.Image) {
 			log.Fatal(err)
 		}
 	}
+
 	if mplusNormalFont == nil {
 		tt, err := opentype.Parse(fonts.MPlus1pRegular_ttf)
 		if err != nil {
@@ -60,6 +61,7 @@ func ProcessUserLog(g *Game, screen *ebiten.Image) {
 			messages.AttackMessage = ""
 		}
 	}
+
 	for _, m := range g.World.Query(g.WorldTags["messengers"]) {
 		messages := m.Components[userMessage].(*UserMessage)
 		if messages.DeadMessage != "" {
@@ -76,14 +78,15 @@ func ProcessUserLog(g *Game, screen *ebiten.Image) {
 		}
 
 	}
+
 	if anyMessages {
 		lastText = tmpMessages
 	}
+
 	for _, msg := range lastText {
 		if msg != "" {
 			text.Draw(screen, msg, mplusNormalFont, fontX, fontY, color.White)
 			fontY += 16
 		}
 	}
-
 }
