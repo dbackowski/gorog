@@ -63,8 +63,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 func main() {
 	g := NewGame()
+	ebiten.SetWindowSize(1024, 768)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
-	ebiten.SetWindowTitle("Gorog")
+	ebiten.SetWindowTitle("GoRog")
 
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
