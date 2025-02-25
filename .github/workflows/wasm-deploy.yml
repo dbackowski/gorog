@@ -20,8 +20,6 @@ jobs:
 
       - name: Debug Go Environment
         run: |
-          echo "GOROOT: $(go env GOROOT)"
-          ls -la "$(go env GOROOT)/misc/"
           echo "Searching for wasm_exec.js..."
           find "$(go env GOROOT)" -name "wasm_exec.js" || echo "No wasm_exec.js found"
 
