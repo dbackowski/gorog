@@ -15,13 +15,13 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.21'
+          go-version: '1.24'
           cache: true
 
       - name: Debug Go Environment
         run: |
           echo "Searching for wasm_exec.js..."
-          find "$(go env GOROOT)" -name "wasm_exec.js" || echo "No wasm_exec.js found"
+          echo find "$(go env GOROOT)" -name "wasm_exec.js" || echo "No wasm_exec.js found"
 
       - name: Build WebAssembly
         run: |
@@ -31,23 +31,8 @@ jobs:
           # Compile Go code to WebAssembly
           GOOS=js GOARCH=wasm go build -o dist/main.wasm
 
-          # Locate wasm_exec.js (fixed path for newer Go versions)
-          WASM_EXEC_PATH="$(go env GOROOT)/misc/wasm/wasm_exec.js"
-
-          # Check if the path exists and find it if not
-          if [ ! -f "$WASM_EXEC_PATH" ]; then
-            echo "Searching for wasm_exec.js..."
-            WASM_EXEC_PATH=$(find "$(go env GOROOT)" -name "wasm_exec.js" | head -n 1)
-
-            if [ -z "$WASM_EXEC_PATH" ]; then
-              echo "Error: wasm_exec.js not found!"
-              exit 1
-            fi
-
-            echo "Found wasm_exec.js at $WASM_EXEC_PATH"
-          fi
-
           # Copy the WebAssembly support files with confirmed path
+          WASM_EXEC_PATH=$(find "$(go env GOROOT)" -name "wasm_exec.js")
           cp "$WASM_EXEC_PATH" dist/
 
           # Create an index.html file if it doesn't exist
