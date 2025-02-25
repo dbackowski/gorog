@@ -18,6 +18,10 @@ jobs:
           go-version: '1.21'
           cache: true
 
+      - name: Debug Go environment
+        run: |
+          go env
+          find "$(go env GOROOT)" -name "wasm_exec.js"
       - name: Build WebAssembly
         run: |
           # Create directory for the output
