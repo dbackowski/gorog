@@ -1,0 +1,58 @@
+name: Build and Deploy Go WebAssembly
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          cache: true
+
+      - name: Build WebAssembly
+        run: |
+          # Create directory for the output
+          mkdir -p dist
+
+          # Compile Go code to WebAssembly
+          GOOS=js GOARCH=wasm go build -o dist/main.wasm
+
+          # Copy the WebAssembly support files
+          cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" dist/
+
+          # Create an index.html file if it doesn't exist
+          if [ ! -f dist/index.html ]; then
+            cat > dist/index.html << 'EOF'
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="utf-8">
+                <title>GoRog</title>
+                <script src="wasm_exec.js"></script>
+                <script>
+                  const go = new Go();
+                  WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject)
+                    .then((result) => {
+                        go.run(result.instance);
+                    });
+                </script>
+              </head>
+              <body></body>
+              </html>
+            EOF
+          fi
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist
+          branch: gh-pages
