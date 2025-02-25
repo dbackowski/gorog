@@ -18,11 +18,6 @@ jobs:
           go-version: '1.24'
           cache: true
 
-      - name: Debug Go Environment
-        run: |
-          echo "Searching for wasm_exec.js..."
-          find "$(go env GOROOT)" -name "wasm_exec.js" || echo "No wasm_exec.js found"
-
       - name: Build WebAssembly
         run: |
           # Create directory for the output
