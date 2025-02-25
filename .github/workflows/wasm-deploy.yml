@@ -26,8 +26,24 @@ jobs:
           # Compile Go code to WebAssembly
           GOOS=js GOARCH=wasm go build -o dist/main.wasm
 
-          # Copy the WebAssembly support files
-          cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" dist/
+          # Locate wasm_exec.js (fixed path for newer Go versions)
+          WASM_EXEC_PATH="$(go env GOROOT)/misc/wasm/wasm_exec.js"
+
+          # Check if the path exists and find it if not
+          if [ ! -f "$WASM_EXEC_PATH" ]; then
+            echo "Searching for wasm_exec.js..."
+            WASM_EXEC_PATH=$(find "$(go env GOROOT)" -name "wasm_exec.js" | head -n 1)
+
+            if [ -z "$WASM_EXEC_PATH" ]; then
+              echo "Error: wasm_exec.js not found!"
+              exit 1
+            fi
+
+            echo "Found wasm_exec.js at $WASM_EXEC_PATH"
+          fi
+
+          # Copy the WebAssembly support files with confirmed path
+          cp "$WASM_EXEC_PATH" dist/
 
           # Create an index.html file if it doesn't exist
           if [ ! -f dist/index.html ]; then
