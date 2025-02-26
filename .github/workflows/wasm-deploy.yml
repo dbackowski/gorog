@@ -1,4 +1,6 @@
 name: Build and Deploy Go WebAssembly
+permissions:
+  contents: write
 
 on:
   push:
