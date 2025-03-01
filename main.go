@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"github.com/bytearena/ecs"
@@ -13,6 +14,7 @@ type Game struct {
 	WorldTags   map[string]ecs.Tag
 	Turn        TurnState
 	TurnCounter int
+	DebugMode   bool
 }
 type MapTile struct {
 	PixelX     int
@@ -23,7 +25,7 @@ type MapTile struct {
 	TileType   TileType
 }
 
-func NewGame() *Game {
+func NewGame(debugMode bool) *Game {
 	g := &Game{}
 	g.Map = NewGameMap()
 	world, tags := InitializeWorld(g.Map.CurrentLevel)
@@ -31,6 +33,7 @@ func NewGame() *Game {
 	g.World = world
 	g.Turn = PlayerTurn
 	g.TurnCounter = 0
+	g.DebugMode = debugMode
 	return g
 }
 
@@ -55,17 +58,25 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	//Draw the Map
 	level := g.Map.CurrentLevel
-	level.DrawLevel(screen)
+	level.DrawLevel(screen, g.DebugMode)
 	ProcessRenderables(g, level, screen)
 	ProcessUserLog(g, screen)
 	ProcessHUD(g, screen)
 }
 
 func main() {
-	g := NewGame()
+	debugMode := flag.Bool("d", false, "Enable debug mode")
+	flag.Parse()
+	
+	g := NewGame(*debugMode)
 	ebiten.SetFullscreen(true)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
-	ebiten.SetWindowTitle("GoRog")
+	
+	title := "GoRog"
+	if g.DebugMode {
+		title += " (Debug Mode)"
+	}
+	ebiten.SetWindowTitle(title)
 
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)

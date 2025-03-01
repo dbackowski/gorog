@@ -170,14 +170,15 @@ func NewLevel() Level {
 	return l
 }
 
-func (level *Level) DrawLevel(screen *ebiten.Image) {
+func (level *Level) DrawLevel(screen *ebiten.Image, debugMode bool) {
 	gd := NewGameData()
 
 	for x := 0; x < gd.ScreenWidth; x++ {
 		for y := 0; y < levelHeight; y++ {
 			idx := level.GetIndexFromXY(x, y)
 			tile := level.Tiles[idx]
-			isVis := level.PlayerVisible.IsVisible(x, y)
+			isVis := debugMode || level.PlayerVisible.IsVisible(x, y)
+			
 			if isVis {
 				op := &ebiten.DrawImageOptions{}
 				op.GeoM.Translate(float64(tile.PixelX), float64(tile.PixelY))

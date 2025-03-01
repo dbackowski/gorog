@@ -9,7 +9,7 @@ func ProcessRenderables(g *Game, level Level, screen *ebiten.Image) {
 		pos := result.Components[position].(*Position)
 		img := result.Components[renderable].(*Renderable).Image
 
-		if level.PlayerVisible.IsVisible(pos.X, pos.Y) {
+		if g.DebugMode || level.PlayerVisible.IsVisible(pos.X, pos.Y) {
 			index := level.GetIndexFromXY(pos.X, pos.Y)
 			tile := level.Tiles[index]
 			op := &ebiten.DrawImageOptions{}
