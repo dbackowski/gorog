@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	_ "image/png"
 	"log"
 
@@ -18,16 +19,24 @@ type TileType int
 const (
 	WALL TileType = iota
 	FLOOR
+	STAIRS_DOWN
+	STAIRS_UP
 )
 
 type Level struct {
 	Tiles         []*MapTile
 	Rooms         []Rect
 	PlayerVisible *fov.View
+	StairsDown    *Position
+	StairsUp      *Position
+	Depth         int
 }
 
+var stairsDown *ebiten.Image
+var stairsUp *ebiten.Image
+
 func loadTileImages() {
-	if floor != nil && wall != nil {
+	if floor != nil && wall != nil && stairsDown != nil && stairsUp != nil {
 		return
 	}
 
@@ -39,6 +48,17 @@ func loadTileImages() {
 	}
 
 	wall, _, err = ebitenutil.NewImageFromFile("assets/wall.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// For now, we'll reuse the floor image for stairs but with different colors
+	stairsDown, _, err = ebitenutil.NewImageFromFile("assets/stairs_down.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	stairsUp, _, err = ebitenutil.NewImageFromFile("assets/stairs_up.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -158,10 +178,43 @@ func (level *Level) GenerateLevelTiles() {
 			contains_rooms = true
 		}
 	}
+
+	// Place stairs down in a random room (not the first room where player starts)
+	if len(level.Rooms) > 1 {
+		// Choose a random room (not the first one)
+		roomIdx := GetDiceRoll(len(level.Rooms) - 1)
+		if roomIdx == 0 {
+			roomIdx = 1 // Ensure we don't use the first room
+		}
+
+		// Get center of the room
+		x, y := level.Rooms[roomIdx].Center()
+
+		// Place stairs down
+		level.StairsDown = &Position{X: x, Y: y}
+		fmt.Printf("Stairs down at %d, %d\n", x, y)
+		idx := level.GetIndexFromXY(x, y)
+		level.Tiles[idx].TileType = STAIRS_DOWN
+		level.Tiles[idx].Image = stairsDown
+	}
+
+	// If this is not the first level, place stairs up
+	if level.Depth > 0 {
+		// Place stairs up in the first room
+		x, y := level.Rooms[0].Center()
+
+		// Place stairs up
+		level.StairsUp = &Position{X: x, Y: y}
+		idx := level.GetIndexFromXY(x, y)
+		level.Tiles[idx].TileType = STAIRS_UP
+		level.Tiles[idx].Image = stairsUp
+	}
 }
 
-func NewLevel() Level {
-	l := Level{}
+func NewLevel(depth int) Level {
+	l := Level{
+		Depth: depth,
+	}
 	loadTileImages()
 	rooms := make([]Rect, 0)
 	l.Rooms = rooms
@@ -178,7 +231,7 @@ func (level *Level) DrawLevel(screen *ebiten.Image, debugMode bool) {
 			idx := level.GetIndexFromXY(x, y)
 			tile := level.Tiles[idx]
 			isVis := debugMode || level.PlayerVisible.IsVisible(x, y)
-			
+
 			if isVis {
 				op := &ebiten.DrawImageOptions{}
 				op.GeoM.Translate(float64(tile.PixelX), float64(tile.PixelY))

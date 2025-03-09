@@ -69,5 +69,10 @@ func ProcessHUD(g *Game, screen *ebiten.Image) {
 		fontY += 16
 		bonus := fmt.Sprintf("To Hit Bonus: %d", wpn.ToHitBonus)
 		text.Draw(screen, bonus, mplusNormalFont, fontX, fontY, color.White)
+		fontY += 16
+		
+		// Display current dungeon level
+		levelText := fmt.Sprintf("Dungeon Level: %d", g.Map.CurrentLevel.Depth+1)
+		text.Draw(screen, levelText, mplusNormalFont, fontX, fontY, color.White)
 	}
 }

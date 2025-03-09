@@ -34,6 +34,13 @@ func NewGame(debugMode bool) *Game {
 	g.Turn = PlayerTurn
 	g.TurnCounter = 0
 	g.DebugMode = debugMode
+	
+	// Initialize FOV for the starting level
+	for _, plr := range g.World.Query(g.WorldTags["players"]) {
+		pos := plr.Components[position].(*Position)
+		g.Map.CurrentLevel.PlayerVisible.Compute(g.Map.CurrentLevel, pos.X, pos.Y, 8)
+	}
+	
 	return g
 }
 
