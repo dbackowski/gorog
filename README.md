@@ -2,7 +2,7 @@
 
 Roguelike game written in Go, based on the great tutorial from this page: https://www.fatoldyeti.com/posts/roguelike-tutorial-0
 
-![screenshot](https://i.imgur.com/MCi5xNU.png)
+![screenshot](https://i.imgur.com/NMEcXPt.png)
 
 ### How to run?
 
